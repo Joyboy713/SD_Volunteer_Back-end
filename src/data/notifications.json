@@ -1,0 +1,39 @@
+[
+    {
+      "id": 1,
+      "title": "New Event Assignment",
+      "message": "You have been assigned to a new event!",
+      "time": "10:00 AM"
+    },
+    {
+      "id": 2,
+      "title": "Reminder",
+      "message": "Don't forget the team meeting at 4 PM!",
+      "time": "11:00 AM"
+    },
+    {
+      "id": 3,
+      "title": "Event Canceled",
+      "message": "Your scheduled event for tomorrow has been canceled.",
+      "time": "12:00 PM"
+    },
+    {
+      "id": 4,
+      "title": "Update",
+      "message": "Your event schedule has been updated.",
+      "time": "1:00 PM"
+    },
+    {
+      "id": 5,
+      "title": "New Message",
+      "message": "You have received a new message from the event coordinator.",
+      "time": "2:00 PM"
+    },
+    {
+      "id": 6,
+      "title": "Event Reminder",
+      "message": "The charity run event starts tomorrow at 9 AM.",
+      "time": "3:00 PM"
+    }
+  ]
+  
