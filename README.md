@@ -1,2 +1,2 @@
-# SD_Volunteer_Front-end
-Software Design volunteering project
+# SD_Volunteer_Back-end
+Software Design volunteering project, back-end
