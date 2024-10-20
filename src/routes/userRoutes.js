@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { authMiddleware } from '../Middleware/authmiddleware.js';
 import path from 'path';
@@ -28,6 +29,44 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
+// Route for registering a new user
+router.post('/register', async (req, res) => {
+  const { firstName, lastName, email, password, dob, address, volunteeringPreferences, shiftPreferences } = req.body;
+
+  try {
+    // Check if the user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user
+    const newUser = new User({
+      firstName,
+      lastName,
+      email,
+      password: password,
+      dob,
+      address,
+      volunteeringPreferences,
+      shiftPreferences,
+    });
+
+    await newUser.save();
+
+    // Generate JWT token
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.status(201).json({ message: 'User registered successfully', token });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 // Route for getting the user profile (for logged-in users)
 router.get('/profile', authMiddleware, async (req, res) => {
@@ -88,7 +127,7 @@ router.post('/profile', authMiddleware, upload.single('profilePicture'), async (
 });
 
 // Route for uploading a profile picture separately
-router.post('/profile/upload', authMiddleware, upload.single('profilePicture'), async (req, res) => {
+router.post('/profile/upload', /*authMiddleware, upload.single('profilePicture'), */ async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
 
@@ -107,6 +146,7 @@ router.post('/profile/upload', authMiddleware, upload.single('profilePicture'), 
   }
 });
 
+// Route for getting all users
 router.get('/', async (req, res) => {
   try {
     const users = await User.find(); // Fetch all users from MongoDB
@@ -116,35 +156,5 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
-
-// Route for user login
-router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    // Find the user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid email or password' });
-    }
-
-    // Compare provided password with stored hashed password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid email or password' });
-    }
-
-    // Generate JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-    // Send token and user data as response
-    res.status(200).json({ token, user });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
 
 export default router;

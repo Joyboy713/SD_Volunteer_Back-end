@@ -49,6 +49,9 @@ app.use('/api/users', userRoutes);
 // Volunteer Match
 app.use('/api/volunteerMatch', volunteerMatchRoutes);
 
+// login
+app.use('/api/users/login', login);
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
